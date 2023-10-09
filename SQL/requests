@@ -1,0 +1,71 @@
+
+create table users(
+    id bigserial primary key ,
+    login text not null,
+    password text not null,
+    personal_id bigint not null references personal_data,
+    created_at timestamp default current_timestamp,
+    active bool default true,
+    updated_at timestamp,
+    deleted_at timestamp
+);
+create table personal_data(
+    id bigserial primary key ,
+    first_name text not null,
+    second_name text not null,
+    patronymic text not null,
+    phone text not null,
+    address text not null,
+    company text,
+    gender_id bigint not null references genders,
+    created_at timestamp default current_timestamp,
+    active bool default true,
+    updated_at timestamp,
+    deleted_at timestamp
+);
+create table genders(
+    id bigserial primary key ,
+    sex text not null
+);
+create table vacancies(
+    id bigserial primary key ,
+    terms text not null,
+    duration timestamp not null,
+    fee float4 not null,
+    user_id bigint not null references users,
+    expiration_time timestamp default current_timestamp + interval '1440 minutes',
+    created_at timestamp default current_timestamp,
+    active bool default true,
+    updated_at timestamp,
+    deleted_at timestamp
+);
+create table tokens(
+    id bigserial primary key ,
+    token text not null,
+    expiration_time timestamp default current_timestamp + interval '168 hours',
+    user_id bigint not null references users,
+    created_at timestamp default current_timestamp,
+    active bool default true ,
+    updated_at timestamp,
+    deleted_at timestamp
+);
+CREATE TABLE responses (
+    id SERIAL PRIMARY KEY,
+    creator_id INTEGER REFERENCES users(id),
+    respondent_id INTEGER REFERENCES personal_data(id),
+    vacancy_id INTEGER REFERENCES vacancies(id),
+    date_created TIMESTAMP DEFAULT NOW()
+);
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description text
+);
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    comment text NOT NULL,
+    status bool default true,
+    owner_id int references users(id),
+    sender_id int references users(id),
+    vacancy_id int references vacancies
+);
